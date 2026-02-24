@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  yb-master:
+    image: yugabytedb/yugabyte:latest
+    container_name: yb-master
+    command: [ "yb-master", "--master_addresses=yb-master:7100", "--replication_factor=1" ]
+    ports:
+      - "7000:7000"
+
+  yb-tserver-1:
+    image: yugabytedb/yugabyte:latest
+    container_name: yb-tserver-1
+    command: [ "yb-tserver", "--tserver_master_addrs=yb-master:7100" ]
+    ports:
+      - "5433:5433"
+      - "9000:9000"
+    depends_on:
+      - yb-master
+
+  yb-tserver-2:
+    image: yugabytedb/yugabyte:latest
+    container_name: yb-tserver-2
+    command: [ "yb-tserver", "--tserver_master_addrs=yb-master:7100" ]
+    ports:
+      - "5434:5433"
+    depends_on:
+      - yb-master
+
+  yb-tserver-3:
+    image: yugabytedb/yugabyte:latest
+    container_name: yb-tserver-3
+    command: [ "yb-tserver", "--tserver_master_addrs=yb-master:7100" ]
+    ports:
+      - "5435:5433"
+    depends_on:
+      - yb-master
