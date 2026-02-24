@@ -1,0 +1,9 @@
+.git
+.gitignore
+.venv
+__pycache__
+*.pyc
+tests/
+test_data.csv
+*.md
+docker-compose.yaml
