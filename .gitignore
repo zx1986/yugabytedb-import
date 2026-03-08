@@ -19,4 +19,8 @@ __pycache__/
 *.swo
 
 # Project specific data
-test_data.csv
+*.csv
+
+# AI
+.agent/
+.gemini/
