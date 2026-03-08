@@ -1,37 +1,101 @@
-version: '3.8'
-
 services:
   yb-master:
     image: yugabytedb/yugabyte:latest
     container_name: yb-master
-    command: [ "yb-master", "--master_addresses=yb-master:7100", "--replication_factor=1" ]
+    command:
+      - "yb-master"
+      - "--master_addresses=yb-master:7100"
+      - "--replication_factor=3"
+      - "--fs_data_dirs=/mnt/data"
+    volumes:
+      - yb-master-data:/mnt/data
     ports:
       - "7000:7000"
+    deploy:
+      resources:
+        limits:
+          memory: 512M
 
   yb-tserver-1:
     image: yugabytedb/yugabyte:latest
     container_name: yb-tserver-1
-    command: [ "yb-tserver", "--tserver_master_addrs=yb-master:7100" ]
+    command:
+      - "yb-tserver"
+      - "--tserver_master_addrs=yb-master:7100"
+      - "--fs_data_dirs=/mnt/data"
+      - "--memory_limit_hard_bytes=536870912"
+    volumes:
+      - yb-tserver1-data:/mnt/data
     ports:
       - "5433:5433"
       - "9000:9000"
     depends_on:
       - yb-master
+    deploy:
+      resources:
+        limits:
+          memory: 512M
 
   yb-tserver-2:
     image: yugabytedb/yugabyte:latest
     container_name: yb-tserver-2
-    command: [ "yb-tserver", "--tserver_master_addrs=yb-master:7100" ]
+    command:
+      - "yb-tserver"
+      - "--tserver_master_addrs=yb-master:7100"
+      - "--fs_data_dirs=/mnt/data"
+      - "--memory_limit_hard_bytes=536870912"
+    volumes:
+      - yb-tserver2-data:/mnt/data
     ports:
       - "5434:5433"
     depends_on:
       - yb-master
+    deploy:
+      resources:
+        limits:
+          memory: 512M
 
   yb-tserver-3:
     image: yugabytedb/yugabyte:latest
     container_name: yb-tserver-3
-    command: [ "yb-tserver", "--tserver_master_addrs=yb-master:7100" ]
+    command:
+      - "yb-tserver"
+      - "--tserver_master_addrs=yb-master:7100"
+      - "--fs_data_dirs=/mnt/data"
+      - "--memory_limit_hard_bytes=536870912"
+    volumes:
+      - yb-tserver3-data:/mnt/data
     ports:
       - "5435:5433"
     depends_on:
       - yb-master
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+
+volumes:
+  yb-master-data:
+    driver: local
+    driver_opts:
+      o: size=512m
+      type: tmpfs
+      device: tmpfs
+  yb-tserver1-data:
+    driver: local
+    driver_opts:
+      o: size=1g
+      type: tmpfs
+      device: tmpfs
+  yb-tserver2-data:
+    driver: local
+    driver_opts:
+      o: size=1g
+      type: tmpfs
+      device: tmpfs
+  yb-tserver3-data:
+    driver: local
+    driver_opts:
+      o: size=1g
+      type: tmpfs
+      device: tmpfs
